@@ -49,7 +49,7 @@ jobs:
         with:
           push: false
           load: true
-          files: docker-compose.local.yml
+          files: docker-compose.yml
           targets: django
           set: |
             django.cache-from=type=gha,scope=django-cached-tests

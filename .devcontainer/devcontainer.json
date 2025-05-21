@@ -2,7 +2,7 @@
 {
     "name": "necdf_backend_dev",
     "dockerComposeFile": [
-        "../docker-compose.local.yml"
+        "../docker-compose.yml"
     ],
     "init": true,
     "mounts": [
