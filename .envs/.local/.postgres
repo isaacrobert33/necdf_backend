@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=necdf_backend
+POSTGRES_USER=crTkwOcmBquyaHFoVVDMJrHjSOtXlUfH
+POSTGRES_PASSWORD=j7jOqWfyydA461aEzgfwvu8cCtAcsQBcroddAYEoCvqO54SUnqmghM45Aw9MonoY
