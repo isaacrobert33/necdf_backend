@@ -1,8 +1,6 @@
 # ruff: noqa: E501
 from .base import *  # noqa: F403
-from .base import INSTALLED_APPS
-from .base import MIDDLEWARE
-from .base import env
+from .base import INSTALLED_APPS, MIDDLEWARE, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -75,3 +73,21 @@ INSTALLED_APPS += ["django_extensions"]
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^/api/.*$",
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8080",
+]

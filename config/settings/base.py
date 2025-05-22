@@ -151,6 +151,9 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
+# django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
+CORS_URLS_REGEX = r"^/api/.*$"
+
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
