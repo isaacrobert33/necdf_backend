@@ -2,13 +2,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import include
-from django.urls import path
+from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from drf_spectacular.views import SpectacularAPIView
-from drf_spectacular.views import SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
+
+# set/define api version as v1
+API_VERSION = "v1"
+# API URLS
+API_PATH_PREFIX = f"api/{API_VERSION}/"
+
+admin.site.site_title = "NetCDF Backend Admin"
+admin.site.site_header = "NetCDF Backend Admin"
+admin.site.index_title = "NetCDF Backend Admin"
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -42,6 +49,13 @@ urlpatterns += [
         "api/docs/",
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
+    ),
+    path(
+        f"{API_PATH_PREFIX}netcdf/",
+        include(
+            "netcdf_backend.apps.netcdf.urls",
+            namespace="netcdf",
+        ),
     ),
 ]
 

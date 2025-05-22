@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 
-from django.contrib.gis.db import models as gis_models
 from django.db import models
 
 
@@ -23,16 +22,6 @@ class UpdatedAtMixin(models.Model):
 
 class UUIDMixin(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    # https://docs.djangoproject.com/en/3.2/ref/models/options/#abstract
-    class Meta:
-        abstract = True
-
-
-class CoordinatesMixin(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, default=0.0)
-    point = gis_models.PointField(srid=4326, null=True)
 
     # https://docs.djangoproject.com/en/3.2/ref/models/options/#abstract
     class Meta:

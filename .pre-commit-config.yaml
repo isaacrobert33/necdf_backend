@@ -1,50 +1,51 @@
-exclude: '^docs/|/migrations/|devcontainer.json'
-default_stages: [pre-commit]
-minimum_pre_commit_version: "3.2.0"
-
 default_language_version:
-  python: python3.12
+  python: python3
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v4.4.0
     hooks:
+      - id: check-added-large-files
       - id: trailing-whitespace
       - id: end-of-file-fixer
-      - id: check-json
-      - id: check-toml
-      - id: check-xml
-      - id: check-yaml
+      # - id: check-yaml
       - id: debug-statements
-      - id: check-builtin-literals
-      - id: check-case-conflict
-      - id: check-docstring-first
-      - id: detect-private-key
+      - id: pretty-format-json
 
-  - repo: https://github.com/adamchainz/django-upgrade
-    rev: '1.25.0'
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1
     hooks:
-      - id: django-upgrade
-        args: ['--target-version', '5.0']
+      - id: pyupgrade
+        args: [--py312-plus]
 
-  # Run the Ruff linter.
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.10
+
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
     hooks:
-      # Linter
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-      # Formatter
-      - id: ruff-format
+      - id: black
+        args: ["--config=./pyproject.toml"]
 
-  - repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.36.4
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
     hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
+      - id: isort
+        args: ["--profile=black"]
 
-# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
-ci:
-  autoupdate_schedule: weekly
-  skip: []
-  submodules: false
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.11.6
+  #   hooks:
+  #     - id: ruff
+  #       args: [--fix, --exit-non-zero-on-fix, --ignore=F403,EM102,EM101,TRY003,N803]
+  #     - id: ruff-format
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+        args: ["--exclude=src/migrations/versions,venv,build,dist,.git", "--ignore=E501,W503,F401,F403"]
+
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.5
+    hooks:
+      - id: codespell

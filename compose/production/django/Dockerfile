@@ -6,13 +6,21 @@ FROM docker.io/python:3.12.10-slim-bookworm AS python
 FROM python AS python-build-stage
 
 ARG BUILD_ENVIRONMENT=production
+ENV GDAL_VERSION=3.6.2
 
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg dependencies
-  libpq-dev
+  libpq-dev \
+  # GDAL library
+  binutils \
+  gdal-bin \
+  libproj-dev \
+  libgdal-dev \
+  libgeos-dev \
+  libgeos-c1v5
 
 
 # Requirements are installed here to ensure they will be cached.
