@@ -7,7 +7,7 @@ from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
-from necdf_backend.users.models import User
+from netcdf_backend.apps.users.models import User
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):

@@ -269,7 +269,7 @@ tags
 dump.rdb
 
 ### Project template
-necdf_backend/media/
+netcdf_backend/media/
 
 .pytest_cache/
 .ipython/

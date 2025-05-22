@@ -20,9 +20,9 @@ def main():
         ) from exc
 
     # This allows easy placement of apps within the interior
-    # necdf_backend directory.
+    # netcdf_backend directory.
     current_path = Path(__file__).parent.resolve()
-    sys.path.append(str(current_path / "necdf_backend"))
+    sys.path.append(str(current_path / "netcdf_backend"))
 
     execute_from_command_line(sys.argv)
 

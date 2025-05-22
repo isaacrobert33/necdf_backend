@@ -10,7 +10,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=_source
 set BUILDDIR=_build
-set APP=..\necdf_backend
+set APP=..\netcdf_backend
 
 if "%1" == "" goto html
 

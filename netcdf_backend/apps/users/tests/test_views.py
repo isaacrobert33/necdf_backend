@@ -12,12 +12,12 @@ from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from necdf_backend.users.forms import UserAdminChangeForm
-from necdf_backend.users.models import User
-from necdf_backend.users.tests.factories import UserFactory
-from necdf_backend.users.views import UserRedirectView
-from necdf_backend.users.views import UserUpdateView
-from necdf_backend.users.views import user_detail_view
+from netcdf_backend.apps.users.forms import UserAdminChangeForm
+from netcdf_backend.apps.users.models import User
+from netcdf_backend.apps.users.tests.factories import UserFactory
+from netcdf_backend.apps.users.views import UserRedirectView
+from netcdf_backend.apps.users.views import UserUpdateView
+from netcdf_backend.apps.users.views import user_detail_view
 
 pytestmark = pytest.mark.django_db
 

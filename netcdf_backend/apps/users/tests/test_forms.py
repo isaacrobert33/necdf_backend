@@ -2,8 +2,8 @@
 
 from django.utils.translation import gettext_lazy as _
 
-from necdf_backend.users.forms import UserAdminCreationForm
-from necdf_backend.users.models import User
+from netcdf_backend.apps.users.forms import UserAdminCreationForm
+from netcdf_backend.apps.users.models import User
 
 
 class TestUserAdminCreationForm:

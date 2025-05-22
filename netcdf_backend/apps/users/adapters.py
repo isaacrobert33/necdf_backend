@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from allauth.socialaccount.models import SocialLogin
     from django.http import HttpRequest
 
-    from necdf_backend.users.models import User
+    from netcdf_backend.apps.users.models import User
 
 
 class AccountAdapter(DefaultAccountAdapter):

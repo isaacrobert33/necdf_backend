@@ -4,7 +4,7 @@ import django.utils.timezone
 from django.db import migrations
 from django.db import models
 
-import necdf_backend.users.models
+import netcdf_backend.apps.users.models
 
 
 class Migration(migrations.Migration):

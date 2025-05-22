@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from necdf_backend.users.api.views import UserViewSet
-from necdf_backend.users.models import User
+from netcdf_backend.apps.users.api.views import UserViewSet
+from netcdf_backend.apps.users.models import User
 
 
 class TestUserViewSet:

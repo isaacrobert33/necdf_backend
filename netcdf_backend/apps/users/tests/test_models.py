@@ -1,4 +1,4 @@
-from necdf_backend.users.models import User
+from netcdf_backend.apps.users.models import User
 
 
 def test_user_get_absolute_url(user: User):

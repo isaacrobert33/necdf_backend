@@ -8,7 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-from necdf_backend.users.models import User
+from netcdf_backend.apps.users.models import User
 
 
 class TestUserAdmin:
@@ -48,7 +48,7 @@ class TestUserAdmin:
     def _force_allauth(self, settings):
         settings.DJANGO_ADMIN_FORCE_ALLAUTH = True
         # Reload the admin module to apply the setting change
-        import necdf_backend.users.admin as users_admin
+        import netcdf_backend.apps.users.admin as users_admin
 
         with contextlib.suppress(admin.sites.AlreadyRegistered):  # type: ignore[attr-defined]
             reload(users_admin)

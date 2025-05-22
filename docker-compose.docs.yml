@@ -1,7 +1,7 @@
 services:
   docs:
-    image: necdf_backend_local_docs
-    container_name: necdf_backend_local_docs
+    image: netcdf_backend_local_docs
+    container_name: netcdf_backend_local_docs
     build:
       context: .
       dockerfile: ./compose/local/docs/Dockerfile
@@ -10,7 +10,7 @@ services:
     volumes:
       - ./docs:/docs:z
       - ./config:/app/config:z
-      - ./necdf_backend:/app/necdf_backend:z
+      - ./netcdf_backend:/app/netcdf_backend:z
     ports:
       - '9000:9000'
     command: /start-docs

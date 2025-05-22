@@ -1,6 +1,6 @@
 // For format details, see https://containers.dev/implementors/json_reference/
 {
-    "name": "necdf_backend_dev",
+    "name": "netcdf_backend_dev",
     "dockerComposeFile": [
         "../docker-compose.yml"
     ],

@@ -1,7 +1,7 @@
 import pytest
 
-from necdf_backend.users.models import User
-from necdf_backend.users.tests.factories import UserFactory
+from netcdf_backend.apps.users.models import User
+from netcdf_backend.apps.users.tests.factories import UserFactory
 
 
 @pytest.fixture(autouse=True)

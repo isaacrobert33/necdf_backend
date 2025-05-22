@@ -1,8 +1,8 @@
 import pytest
 from celery.result import EagerResult
 
-from necdf_backend.users.tasks import get_users_count
-from necdf_backend.users.tests.factories import UserFactory
+from netcdf_backend.apps.users.tasks import get_users_count
+from netcdf_backend.apps.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
 
