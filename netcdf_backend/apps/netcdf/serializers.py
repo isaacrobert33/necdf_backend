@@ -29,9 +29,21 @@ class PlotRequestSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=False)
     lon = serializers.FloatField(required=False)
     filters = serializers.DictField(
-        child=serializers.ListField(child=serializers.CharField()), required=False
+        child=serializers.ListField(child=serializers.CharField()),
+        required=False,
     )
     min_lat = serializers.FloatField(required=False)
     max_lat = serializers.FloatField(required=False)
     min_lon = serializers.FloatField(required=False)
     max_lon = serializers.FloatField(required=False)
+
+
+class FilterParameterSerializer(serializers.Serializer):
+    scenario = serializers.CharField(required=True)
+    variable = serializers.CharField(required=True)
+    season = serializers.CharField(required=True)
+    period = serializers.CharField(required=True)
+
+
+class FileResponseSerializer(serializers.Serializer):
+    file_url = serializers.CharField()
