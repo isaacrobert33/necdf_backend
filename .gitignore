@@ -270,6 +270,7 @@ dump.rdb
 
 ### Project template
 netcdf_backend/media/
+netcdf_backend/data/
 
 .pytest_cache/
 .ipython/

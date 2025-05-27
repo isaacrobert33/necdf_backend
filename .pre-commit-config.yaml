@@ -18,6 +18,11 @@ repos:
       - id: pyupgrade
         args: [--py312-plus]
 
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile=black"]
 
   - repo: https://github.com/psf/black
     rev: 24.8.0
@@ -25,25 +30,22 @@ repos:
       - id: black
         args: ["--config=./pyproject.toml"]
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.6
     hooks:
-      - id: isort
-        args: ["--profile=black"]
-
-  # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   rev: v0.11.6
-  #   hooks:
-  #     - id: ruff
-  #       args: [--fix, --exit-non-zero-on-fix, --ignore=F403,EM102,EM101,TRY003,N803]
-  #     - id: ruff-format
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix, --ignore=F403]
+      - id: ruff-format
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.2.0
     hooks:
       - id: flake8
-        args: ["--exclude=src/migrations/versions,venv,build,dist,.git", "--ignore=E501,W503,F401,F403"]
-
+        args:
+          [
+            "--exclude=src/migrations/versions,venv,build,dist,.git",
+            "--ignore=E501,W503,F401,F403",
+          ]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.5
