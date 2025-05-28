@@ -2,7 +2,6 @@ import base64
 import io
 import json
 import os
-import traceback
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -26,11 +25,12 @@ def find_coord_var_for_dim(ds, dim):
 def convert_cftime(obj):
     if isinstance(obj, DatetimeNoLeap):
         return obj.isoformat()
-    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+    msg = f"Object of type {obj.__class__.__name__} is not JSON serializable"
+    raise TypeError(msg)
 
 
-def extract_netcdf_metadata(file_path: str):
-    ds = xr.open_dataset(file_path)
+def extract_netcdf_metadata(file: str):  # noqa: C901
+    ds = xr.open_dataset(file)
 
     # Extract variables
     variables = []
@@ -43,18 +43,18 @@ def extract_netcdf_metadata(file_path: str):
                 "units": var.attrs.get("units", ""),
                 "dimensions": list(var.dims),
                 "shape": list(var.shape),
-            }
+            },
         )
 
     # Extract dimensions
     dimensions = []
 
     for dim in ds.dims:
-        dim_values = ds.coords[dim].values if dim in ds.coords else None
+        dim_values = ds.coords[dim].values if dim in ds.coords else None  # noqa: PD011
         var_key = find_coord_var_for_dim(ds, dim)
 
         if dim_values is None:
-            var_values = ds[var_key].values if var_key else None
+            var_values = ds[var_key].values if var_key else None  # noqa: PD011
             if (
                 var_values is not None
                 and var_values.size > 0
@@ -66,7 +66,7 @@ def extract_netcdf_metadata(file_path: str):
         dim_values = ds.coords[var_key].values if var_key in ds.coords else None
         values = None
 
-        if dim_values is not None and len(dim_values) <= 1000:
+        if dim_values is not None and len(dim_values) <= 1000:  # noqa: PLR2004
             # Handle datetime values: convert to ISO format
             if np.issubdtype(dim_values.dtype, np.datetime64):
                 # Convert datetime64[ns] → pandas datetime → ISO
@@ -81,7 +81,7 @@ def extract_netcdf_metadata(file_path: str):
                 "name": dim,
                 "length": int(ds.dims[dim]),
                 "values": values,
-            }
+            },
         )
 
     # Identify lat/lon dims
@@ -98,10 +98,10 @@ def extract_netcdf_metadata(file_path: str):
         lon_dim = find_coord_var_for_dim(ds, lon_dim)
 
     if lat_dim in ds:
-        lat_values = ds[lat_dim].values
+        lat_values = ds[lat_dim].values  # noqa: PD011
         lat_range = [float(np.min(lat_values)), float(np.max(lat_values))]
     if lon_dim in ds:
-        lon_values = ds[lon_dim].values
+        lon_values = ds[lon_dim].values  # noqa: PD011
         lon_range = [float(np.min(lon_values)), float(np.max(lon_values))]
 
     # Extract global metadata
@@ -119,7 +119,7 @@ def extract_netcdf_metadata(file_path: str):
     return json.loads(
         json.dumps(
             {
-                "filename": os.path.basename(file_path),
+                "filename": os.path.basename(file),  # noqa: PTH119
                 "variables": variables,
                 "dimensions": dimensions,
                 "metadata": metadata,
@@ -127,22 +127,22 @@ def extract_netcdf_metadata(file_path: str):
                 "lon_range": lon_range,
             },
             default=convert_cftime,
-        )
+        ),
     )
 
 
 def plot_temperature_map(da: xr.DataArray, var: str, lat_dim: str, lon_dim: str):
-
     # Set up the plot
     fig, ax = plt.subplots(
-        figsize=(10, 6), subplot_kw={"projection": ccrs.PlateCarree()}
+        figsize=(10, 6),
+        subplot_kw={"projection": ccrs.PlateCarree()},
     )
     ax.set_title(f"{var.capitalize()} Map")
 
     if "time" in da.dims:
         da = da.isel(time=0)
 
-    if da.ndim != 2 or da.shape[0] < 2 or da.shape[1] < 2:
+    if da.ndim != 2 or da.shape[0] < 2 or da.shape[1] < 2:  # noqa: PLR2004
         plt.close(fig)
         return None
 
@@ -200,7 +200,7 @@ def get_spatial_plot(da: xr.DataArray, var: str):
         if d not in ["lat", "latitude", "lon", "longitude", "month"]:
             da = da.isel({d: 0})
 
-    data2D = da.mean(dim="month")  # Average over months
+    data2D = da.mean(dim="month")  # Average over months  # noqa: N806
 
     data2D.plot(ax=ax)
     ax.set_title(f"Mean {var} Spatial Plot")
@@ -216,7 +216,7 @@ def get_spatial_plot(da: xr.DataArray, var: str):
     return f"data:image/png;base64,{spatial_base64}"
 
 
-def get_timeseries(
+def get_timeseries(  # noqa: PLR0913
     ds: xr.Dataset,
     da: xr.DataArray,
     lat: int,
@@ -225,7 +225,6 @@ def get_timeseries(
     lat_dim: str,
     lon_dim: str,
 ):
-    # elif plot_type == "timeseries":
     # Find nearest lat/lon
     fig, ax = plt.subplots(figsize=(8, 5))
     da = da.sel({lat_dim: lat, lon_dim: lon}, method="nearest")
@@ -237,9 +236,10 @@ def get_timeseries(
     if np.issubdtype(da["time"].dtype, np.datetime64):
         times = pd.to_datetime(da["time"].values)
     else:
-        times = pd.to_datetime([t.isoformat() for t in da["time"].values])
+        times = pd.to_datetime(
+            [t.isoformat() for t in da["time"].values],  # noqa: PD011
+        )
 
-    print(times)
     ax.plot(times, da.values)
 
     if lat and lon:
@@ -262,7 +262,10 @@ def get_timeseries(
 
 
 def generate_plotly_geospatial_map(
-    da: xr.DataArray, var_name: str, lat_dim: str, lon_dim: str
+    da: xr.DataArray,
+    var_name: str,
+    lat_dim: str,
+    lon_dim: str,
 ):
     """
     Generate a spatial map from a 2D DataArray over latitude and longitude using Plotly.
@@ -273,17 +276,17 @@ def generate_plotly_geospatial_map(
 
     Returns:
         dict: Plotly figure dictionary (JSON-serializable)
-    """
+    """  # noqa: E501
     # Ensure coordinate arrays
-    lat_vals = da[lat_dim].values
-    lon_vals = da[lon_dim].values
-    z_vals = da.values
+    lat_vals = da[lat_dim].values  # noqa: PD011
+    lon_vals = da[lon_dim].values  # noqa: PD011
+    z_vals = da.values  # noqa: PD011
 
     if "time" in da.dims:
         da = da.isel(time=0)
 
     # Make sure data is 2D
-    if da.ndim != 2:
+    if da.ndim != 2:  # noqa: PLR2004
         return None
 
     # Create meshgrid for lat/lon positions
@@ -302,10 +305,10 @@ def generate_plotly_geospatial_map(
             z=flat_vals,
             radius=8,
             colorscale="Viridis",
-            colorbar=dict(title=var_name),
+            colorbar={"title": var_name},
             zmin=np.nanmin(flat_vals),
             zmax=np.nanmax(flat_vals),
-        )
+        ),
     )
 
     fig.update_layout(
@@ -340,7 +343,9 @@ def get_coordinates_dim(dims: tuple, coord_type: str):
     return forms.get(coord_type) if forms.get(coord_type) in dims else None
 
 
-def create_plot_from_filter(serializer: PlotRequestSerializer) -> tuple[dict, str]:
+def create_plot_from_filter(  # noqa: C901, PLR0912
+    serializer: PlotRequestSerializer,
+) -> tuple[dict, str]:
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
 
@@ -371,7 +376,7 @@ def create_plot_from_filter(serializer: PlotRequestSerializer) -> tuple[dict, st
     # Apply filters to all available dimensions
     for dim, vals in filters.items():
         if dim in da.dims:
-            if isinstance(vals, list) and len(vals) == 2:
+            if isinstance(vals, list) and len(vals) == 2:  # noqa: PLR2004
                 # Assume it's a range
                 da = da.sel({dim: slice(vals[0], vals[1])})
             else:
@@ -398,29 +403,38 @@ def create_plot_from_filter(serializer: PlotRequestSerializer) -> tuple[dict, st
 
     try:
         spatial_plot = plot_temperature_map(
-            da, var=var, lat_dim=lat_dim, lon_dim=lon_dim
+            da,
+            var=var,
+            lat_dim=lat_dim,
+            lon_dim=lon_dim,
         )
-    except Exception:
-        print(traceback.format_exc())
+    except Exception:  # noqa: BLE001
+        # print(traceback.format_exc()) # noqa: ERA001
         spatial_plot = None
     try:
         plotly_map_data = generate_plotly_geospatial_map(
-            da, var_name=var, lat_dim=lat_dim, lon_dim=lon_dim
+            da,
+            var_name=var,
+            lat_dim=lat_dim,
+            lon_dim=lon_dim,
         )
-    except Exception:
-        print(traceback.format_exc())
+    except Exception:  # noqa: BLE001
+        # print(traceback.format_exc())  # noqa: ERA001
         plotly_map_data = None
 
     try:
         timeseries = get_timeseries(
-            ds, da, lat=lat, lon=lon, var=var, lat_dim=lat_dim, lon_dim=lon_dim
+            ds,
+            da,
+            lat=lat,
+            lon=lon,
+            var=var,
+            lat_dim=lat_dim,
+            lon_dim=lon_dim,
         )
-    except Exception:
-        print(traceback.format_exc())
+    except Exception:  # noqa: BLE001
+        # print(traceback.format_exc()) # noqa: ERA001
         timeseries = None
-
-    # except ValueError:
-    #     return {"error": "Invalid data format, unable to produce plots"}, "error"
 
     return {
         "spatial_image": spatial_plot,

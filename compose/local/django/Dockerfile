@@ -5,7 +5,7 @@ FROM docker.io/python:3.12.10-slim-bookworm AS python
 FROM python AS python-build-stage
 
 ARG BUILD_ENVIRONMENT=local
-ENV GDAL_VERSION=3.6.2
+ENV GDAL_VERSION=3.6.0
 
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -44,7 +44,15 @@ WORKDIR ${APP_HOME}
 
 # devcontainer dependencies and utils
 RUN apt-get update && apt-get install --no-install-recommends -y \
+  # GDAL library
+  binutils \
+  gdal-bin \
+  libproj-dev \
+  libgdal-dev \
+  libgeos-dev \
+  libgeos-c1v5 \
   sudo git bash-completion nano ssh
+
 
 # Create devcontainer user and add it to sudoers
 RUN groupadd --gid 1000 dev-user \

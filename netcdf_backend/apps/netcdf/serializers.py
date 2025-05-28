@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from netcdf_backend.apps.netcdf.models import NetCDFFile
+from netcdf_backend.apps.netcdf.models import FileCache, NetCDFFile
 
 
 class NetCDFFileSerializer(serializers.ModelSerializer):
@@ -45,5 +45,9 @@ class FilterParameterSerializer(serializers.Serializer):
     period = serializers.CharField(required=True)
 
 
-class FileResponseSerializer(serializers.Serializer):
-    file_url = serializers.CharField()
+class FileResponseSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(use_url=True)
+
+    class Meta:
+        model = FileCache
+        fields = ("file",)

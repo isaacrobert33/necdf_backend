@@ -10,7 +10,7 @@ repos:
       - id: end-of-file-fixer
       # - id: check-yaml
       - id: debug-statements
-      - id: pretty-format-json
+      - id: check-json
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1
@@ -18,11 +18,11 @@ repos:
       - id: pyupgrade
         args: [--py312-plus]
 
-  # - repo: https://github.com/PyCQA/isort
-  #   rev: 5.13.2
-  #   hooks:
-  #     - id: isort
-  #       args: ["--profile=black"]
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile=black"]
 
   - repo: https://github.com/psf/black
     rev: 24.8.0
@@ -30,12 +30,12 @@ repos:
       - id: black
         args: ["--config=./pyproject.toml"]
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.6
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --ignore=F403]
-      - id: ruff-format
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.11.6
+  #   hooks:
+  #     - id: ruff
+  #       args: [--fix, --exit-non-zero-on-fix, --ignore=F403]
+  #     - id: ruff-format
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.2.0

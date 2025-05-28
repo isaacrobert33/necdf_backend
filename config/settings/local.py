@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-from .base import *  # noqa: F403
+from .base import *
 from .base import INSTALLED_APPS, MIDDLEWARE, env
 
 # GENERAL
@@ -78,6 +78,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
+    "http://localhost:5173",
 ]
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -90,4 +91,5 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
+    "http://localhost:5173",
 ]

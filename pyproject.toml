@@ -60,6 +60,7 @@ extend-exclude = [
     "*/migrations/*.py",
     "staticfiles/*",
 ]
+ignore = ["PD011", "PLR2004", "C408", "C901", "PLR0912", "BLE001", "T201", "ERA001"]
 
 [tool.ruff.lint]
 select = [

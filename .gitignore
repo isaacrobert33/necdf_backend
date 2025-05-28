@@ -277,3 +277,5 @@ netcdf_backend/data/
 .env
 .envs/*
 !.envs/.local/
+
+caches/

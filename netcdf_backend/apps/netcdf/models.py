@@ -1,8 +1,7 @@
 # Create your models here.
 from django.contrib.gis.db import models
 
-from netcdf_backend.core.mixins import CreatedAtMixin
-from netcdf_backend.core.mixins import UUIDMixin
+from netcdf_backend.core.mixins import CreatedAtMixin, UUIDMixin
 
 
 class NetCDFFile(UUIDMixin, CreatedAtMixin, models.Model):
@@ -19,7 +18,12 @@ class ClimateData(models.Model):
     )
     variable = models.CharField(
         max_length=10,
-        choices=[("pr", "Precipitation"), ("tas", "Temperature")],
+        choices=[
+            ("pr", "Precipitation"),
+            ("tas", "Temperature"),
+            ("tasmax", "Max Temperature"),
+            ("tasmin", "Min Temperature"),
+        ],
     )
     season = models.CharField(
         max_length=10,
@@ -28,7 +32,7 @@ class ClimateData(models.Model):
             ("MAM", "MAM"),
             ("JJA", "JJA"),
             ("SON", "SON"),
-            ("Annual", "Annual"),
+            ("ANN", "ANN"),
         ],
     )
     period = models.CharField(max_length=20)  # e.g., '2025-2054'
@@ -41,7 +45,7 @@ class ClimateData(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["scenario", "variable", "season", "period"]),
-            models.Index(fields=["geom"], name="climate_data_geom_idx", using="gist"),
+            # models.Index(fields=["geom"], name="climate_data_geom_idx", using="gist"),  # noqa: E501, ERA001
         ]
 
 
@@ -54,7 +58,7 @@ class FileCache(models.Model):
     variable = models.CharField(max_length=10)
     season = models.CharField(max_length=10)
     period = models.CharField(max_length=20)
-    file_path = models.CharField(max_length=255)
+    file = models.FileField(upload_to="caches/")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

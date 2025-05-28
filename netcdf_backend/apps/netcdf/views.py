@@ -1,20 +1,22 @@
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.parsers import FormParser
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from netcdf_backend.apps.netcdf.models import FileCache
-from netcdf_backend.apps.netcdf.models import NetCDFFile
-from netcdf_backend.apps.netcdf.serializers import FileResponseSerializer
-from netcdf_backend.apps.netcdf.serializers import NetCDFFileSerializer
-from netcdf_backend.apps.netcdf.serializers import PlotRequestSerializer
+from netcdf_backend.apps.netcdf.models import FileCache, NetCDFFile
+from netcdf_backend.apps.netcdf.serializers import (
+    FileResponseSerializer,
+    FilterParameterSerializer,
+    NetCDFFileSerializer,
+    PlotRequestSerializer,
+)
 from netcdf_backend.apps.netcdf.tasks import process_and_cache_netcdf
-from netcdf_backend.apps.netcdf.utils import create_plot_from_filter
-from netcdf_backend.apps.netcdf.utils import extract_netcdf_metadata
+from netcdf_backend.apps.netcdf.utils import (
+    create_plot_from_filter,
+    extract_netcdf_metadata,
+)
 from netcdf_backend.core.error_response import ErrorResponse
 from netcdf_backend.core.success_response import SuccessResponse
 
@@ -66,17 +68,19 @@ class NCDataPlot(APIView):
 
 
 class GeoTIFFView(APIView):
-    def get(self, request):
-        scenario = request.query_params.get("scenario")
-        variable = request.query_params.get("variable")
-        season = request.query_params.get("season")
-        period = request.query_params.get("period")
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
-        if not all([scenario, variable, season, period]):
-            return ErrorResponse(
-                {"error": "Missing parameters"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    def get(self, request):
+        serializer = FilterParameterSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        scenario = data["scenario"]
+        season = data["season"]
+        period = data["period"]
+        variable = data["variable"]
+        variable = variable + "max" if variable == "tas" else data["variable"]
 
         # Check cache
         try:
@@ -88,40 +92,44 @@ class GeoTIFFView(APIView):
                 period=period,
             )
             return SuccessResponse(
-                FileResponseSerializer(
-                    {"file_url": f"{settings.MEDIA_URL}{cached.file_path}"},
+                status=status.HTTP_200_OK,
+                data=FileResponseSerializer(
+                    cached,
                 ).data,
             )
         except FileCache.DoesNotExist:
             # Trigger async task
-            file_path = f"netcdf_files/ensmean_{variable}_{scenario}.nc"
+            file = f"netcdf_backend/data/annual/{variable}_day_Ensmean_{scenario}_r1i1p1f1_gr_merged.nc"  # noqa: E501
             region_bbox = [29, -11.75, 40.5, -1]  # Tanzania
+            print("Processing....")
             process_and_cache_netcdf.delay(
-                file_path,
-                scenario,
-                variable,
-                season,
-                period,
-                region_bbox,
+                file,
+                scenario=scenario,
+                variable=variable,
+                season=season,
+                period=period,
+                region_bbox=region_bbox,
             )
             return SuccessResponse(
-                {"status": "Processing started, try again later"},
                 status=status.HTTP_202_ACCEPTED,
+                data={"status": "Processing started, try again later"},
             )
 
 
 class GeoJSONView(APIView):
-    def get(self, request):
-        scenario = request.query_params.get("scenario")
-        variable = request.query_params.get("variable")
-        season = request.query_params.get("season")
-        period = request.query_params.get("period")
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
-        if not all([scenario, variable, season, period]):
-            return SuccessResponse(
-                {"error": "Missing parameters"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    def get(self, request: Request):
+        serializer = FilterParameterSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        scenario = data["scenario"]
+        season = data["season"]
+        period = data["period"]
+        variable = data["variable"]
+        variable = variable + "max" if variable == "tas" else data["variable"]
 
         # Check cache
         try:
@@ -133,22 +141,22 @@ class GeoJSONView(APIView):
                 period=period,
             )
             data = FileResponseSerializer(
-                {"file_url": f"{settings.MEDIA_URL}{cached.file_path}"},
+                cached,
             ).data
-            return SuccessResponse(data=data)
+            return SuccessResponse(status=status.HTTP_200_OK, data=data)
         except FileCache.DoesNotExist:
             # Trigger async task
-            file_path = f"netcdf_files/ensmean_{variable}_{scenario}.nc"
+            file = f"netcdf_backend/data/annual/{variable}_day_Ensmean_{scenario}_r1i1p1f1_gr_merged.nc"  # noqa: E501
             region_bbox = [29, -11.75, 40.5, -1]
             process_and_cache_netcdf.delay(
-                file_path,
-                scenario,
-                variable,
-                season,
-                period,
-                region_bbox,
+                file,
+                scenario=scenario,
+                variable=variable,
+                season=season,
+                period=period,
+                region_bbox=region_bbox,
             )
             return SuccessResponse(
-                {"status": "Processing started, try again later"},
                 status=status.HTTP_202_ACCEPTED,
+                data={"status": "Processing started, try again later"},
             )
