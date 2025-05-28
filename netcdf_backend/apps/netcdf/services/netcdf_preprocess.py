@@ -186,6 +186,8 @@ def process_netcdf(  # noqa: C901, PLR0912, PLR0915
         f"Processed data: shape={data.shape}, lats={len(lats)}, lons={len(lons)}",  # noqa: G004
     )
 
+    print(data.tolist(), variable)
+
     # Clip to Tanzania border
     records = []
     for i in range(len(lats)):
